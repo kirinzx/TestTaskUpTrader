@@ -1,0 +1,24 @@
+{% load menu_tags %}
+
+{% for item in sub_items %}
+    
+    {% if item.url %}
+        <div><a href="{{item.url}}">{{ item.name }}</a>
+    {% else %}
+        <div><a href="">{{ item.name }}</a>
+    {% endif %}
+        {% with children=menu_items|get_children:item %}
+            {% if children %}
+                {% if is_open %}
+                    <details open><summary></summary>
+                        {% include 'render_children.html' with menu_items=menu_items is_open=True sub_items=children %}
+                {% else %}
+                    <details><summary></summary>
+                        {% include 'render_children.html' with menu_items=menu_items sub_items=children %}
+                {% endif %}
+                </details>
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+{% endfor %}

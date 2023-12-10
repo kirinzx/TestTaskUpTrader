@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: treeMenu
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    networks:
+      - djangonetwork
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-container
+    volumes:
+      - ./backend:/app
+    environment:
+      - DJANGO_ALLOWED_HOSTS=127.0.0.1
+      - DJANGO_SUPERUSER_PASSWORD=admin
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=tmp@gmail.ru
+    command:
+      - sh
+      - -c
+      - |
+        /usr/local/bin/wait-for-it.sh db:5432 -t 25 --
+        python manage.py makemigrations --noinput
+        python manage.py migrate --noinput
+        python manage.py createsuperuser --noinput
+        python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - djangonetwork
+
+volumes:
+  pgdbdata: null
+
+networks:
+  djangonetwork:
+    driver: bridge

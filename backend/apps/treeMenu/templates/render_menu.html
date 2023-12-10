@@ -1,0 +1,33 @@
+{% load menu_tags %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/styles.css'%}">
+<h1>Меню: {{menu_name}}</h1>
+
+<div class="treeHTML">
+    {% for item in menu_items %}
+        {% if item.parent is None %}
+            {% if item.url %}
+                <div><a href="{{item.url}}">{{ item.name }}</a>
+            {% else %}
+                <div><a href="">{{ item.name }}</a>
+            {% endif %}
+                {% with children=menu_items|get_children:item %}
+                    {% if children %}
+                        {% if item_pk in roots and item.id <= item_pk %}
+                            <details open><summary></summary>
+                                {% include 'render_children.html' with menu_items=menu_items is_open=True sub_items=children %}
+                        {% elif item_pk in roots and item.id > item_pk %}
+                            <details open><summary></summary>
+                                {% include 'render_children.html' with menu_items=menu_items sub_items=children %}
+                        {% else %}
+                            <details><summary></summary>
+                                {% include 'render_children.html' with menu_items=menu_items sub_items=children %}
+                        {% endif %}
+                        </details>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

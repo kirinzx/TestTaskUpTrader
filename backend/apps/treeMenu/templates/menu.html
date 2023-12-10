@@ -1,0 +1,19 @@
+{% load menu_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Меню</title>
+</head>
+<body>
+    {% if menu_names is not None %}
+        {% for menu_name in menu_names %}
+            {% draw_menu menu_name %}
+        {% endfor %}
+    {% else %}
+        {% draw_menu menu_name item_pk %}
+    {% endif %}
+</body>
+</html>
